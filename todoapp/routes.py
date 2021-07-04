@@ -52,6 +52,11 @@ def listas():
     return render_template('listas.html', title='Listas')
 
 
+@app.route('/perfil')
+def perfil():
+    return render_template('perfil.html')
+
+
 @app.errorhandler(404)
 def error_404(e):
     flash('Página não encontrada', 'danger')

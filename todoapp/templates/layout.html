@@ -21,9 +21,10 @@
         </a>
         <div class="navbar-nav">
             {% if current_user.is_authenticated %}
-                <div class="dropdown mt-1 me-1">
+                <div class="dropdown me-1">
                     <i style="font-size: 1.7rem; color:black; cursor: pointer" class="bi bi-person-circle" data-bs-toggle="dropdown"></i>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ url_for('perfil') }}">Perfil</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('listas') }}">Ver listas</a></li>
                         <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Sair</a></li>
                     </ul>
