@@ -1,9 +1,12 @@
 // cacheando seletores jQuery
 let $tarefas = $('#tarefas')
 let $listas = $('#listas')
-let $modal = $('.modal')
+let $modal = $('#modal-confirmacao')
+let $modal_compartilhar_lista = $('#modal-compartilhar-lista')
 let $lista_ativa = $('#lista')
+let $lista_ctx_menu;
 let $progresso_lista_ativa = $lista_ativa.find('#progresso')
+let $ctx_menu = $('.context-menu')
 
 let qtd_concluidas;
 let qtd_tarefas;
@@ -60,7 +63,7 @@ $('#criar_lista').on('click', function(){
 });
 
 $('#excluir_lista').on('click', function () {
-    $modal.find('.modal-tite').text('Excluir lista')
+    $modal.find('.modal-title').text('Excluir lista')
     $modal.find('.modal-body').text('Tem certeza que deseja excluir essa lista?')
     $modal.modal('show')
     let $modalfooter = $modal.find('.modal-footer')
@@ -178,6 +181,40 @@ $listas.on('click', 'button', function() {
     })
 })
 
+$listas.on('contextmenu', 'button', function (event) {
+    $lista_ctx_menu = $(this)
+    $ctx_menu.empty()
+    event.preventDefault()
+    $ctx_menu.append('<li>Compartilhar lista</li>')
+    $ctx_menu.finish().toggle(100)
+    $ctx_menu.css({
+        top: event.pageY + 'px',
+        left: event.pageX + 'px'
+    })
+})
+
+$(document).bind("mousedown", function (event) {
+    if ($(event.target).parents(".context-menu").length === 0) {
+        $ctx_menu.hide(100);
+    }
+});
+
+function compartilharLista() {
+    $modal_compartilhar_lista.find('.modal-title').text("Compartilhar lista '" + $lista_ctx_menu.text() + "'")
+    $modal_compartilhar_lista.modal('show')
+}
+
+$ctx_menu.click('li', function(){
+    switch($(this).text()) {
+        case "Compartilhar lista":
+            compartilharLista()
+            break
+    }
+
+    // Hide it AFTER the action was triggered
+    $ctx_menu.hide(100);
+});
+
 $('#criar_tarefa').on('click', function () {
     $.ajax({
         type: 'POST',
@@ -232,7 +269,7 @@ $tarefas.on('click', 'input', function(){
 $tarefas.on('click', '.excluir-tarefa', function () {
     let id_tarefa = $(this).attr('id')
 
-    $modal.find('.modal-tite').text('Excluir tarefa')
+    $modal.find('.modal-title').text('Excluir tarefa')
     $modal.find('.modal-body').text('Tem certeza que deseja excluir essa tarefa?')
     $modal.modal('show')
     let $modalfooter = $modal.find('.modal-footer')
