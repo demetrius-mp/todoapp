@@ -194,7 +194,7 @@ $listas.on('contextmenu', 'button', function (event) {
     $lista_ctx_menu = $(this)
     $ctx_menu.empty()
     event.preventDefault()
-    $ctx_menu.append('<li>Compartilhar lista</li>')
+    $ctx_menu.append('<li>Enviar cópia</li>')
     $ctx_menu.finish().toggle(100)
     $ctx_menu.css({
         top: event.pageY + 'px',
@@ -204,24 +204,62 @@ $listas.on('contextmenu', 'button', function (event) {
 
 $(document).bind("mousedown", function (event) {
     if ($(event.target).parents(".context-menu").length === 0) {
-        $ctx_menu.hide(100);
+        $ctx_menu.hide(100)
+    }
+    if ($(event.target).closest('#modal-compartilhar-lista').length === 0) {
+        let $email = $modal_compartilhar_lista.find('#email-autocomplete')
+        $email.removeClass('is-invalid')
+        $modal_compartilhar_lista.find('.invalid-feedback').remove()
     }
 });
 
-function compartilharLista() {
-    $modal_compartilhar_lista.find('.modal-title').text("Compartilhar lista '" + $lista_ctx_menu.text() + "'")
+function enviarCopiaLista() {
+    $modal_compartilhar_lista.find('.modal-title').text("Enviar cópia de '" + $lista_ctx_menu.text() + "'")
     $modal_compartilhar_lista.modal('show')
     autocomplete(document.getElementById('email-autocomplete'), emails)
+    let $modalfooter = $modal_compartilhar_lista.find('.modal-footer')
+    $modalfooter.off()
+
+    $modalfooter.on('click', '#confirmar', function() {
+        let id_lista = $lista_ctx_menu.attr('id').split('_')[1]
+        let $email = $modal_compartilhar_lista.find('#email-autocomplete')
+
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+        }
+
+        if (!validateEmail($email.val())) {
+            $email.addClass('is-invalid')
+            $modal_compartilhar_lista.find('.invalid-feedback').remove()
+            $email.parent().append('<div class="invalid-feedback"><span>Email inválido</span></div>')
+        }
+
+        else {
+            $modal_compartilhar_lista.modal('hide')
+            $.ajax({
+                type: 'POST',
+                url: `/api/listas/enviar_copia`,
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(
+                    {
+                        'id_lista': id_lista,
+                        'email_recebedor': $email.val()
+                    }
+                ),
+            })
+        }
+    })
 }
 
 $ctx_menu.click('li', function(){
     switch($(this).text()) {
-        case "Compartilhar lista":
-            compartilharLista()
+        case "Enviar cópia":
+            enviarCopiaLista()
             break
     }
 
-    // Hide it AFTER the action was triggered
     $ctx_menu.hide(100);
 });
 

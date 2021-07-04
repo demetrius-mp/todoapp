@@ -125,3 +125,21 @@ def api_emails():
     usuarios_email = Usuario.select(Usuario.email)
     emails = [usuario.email for usuario in usuarios_email if usuario.email != current_user.email]
     return jsonify(emails)
+
+
+@app.route('/api/listas/enviar_copia', methods=['POST'])
+@login_required
+def api_enviar_copia():
+    data = request.json
+
+    id_lista = int(data['id_lista'])
+    copia_lista = Lista.get_or_none(Lista.id == id_lista)
+    if not copia_lista:
+        return jsonify({'msg': 'Lista não encontrada'})
+
+    email_recebedor = data['email_recebedor']
+    recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
+    if not recebedor:
+        return jsonify({'msg': 'Usuário não encontrada'})
+
+    return jsonify({'msg': 'success'})
