@@ -11,6 +11,12 @@ let $ctx_menu = $('.context-menu')
 let qtd_concluidas;
 let qtd_tarefas;
 let id_lista_ativa;
+let emails;
+
+$.ajax({
+    type: 'GET',
+    url: '/api/'
+})
 
 $.ajax({
     type: 'GET',
@@ -202,6 +208,7 @@ $(document).bind("mousedown", function (event) {
 function compartilharLista() {
     $modal_compartilhar_lista.find('.modal-title').text("Compartilhar lista '" + $lista_ctx_menu.text() + "'")
     $modal_compartilhar_lista.modal('show')
+    autocomplete(document.getElementById('email-autocomplete'), ['abc', 'def', 'agh'])
 }
 
 $ctx_menu.click('li', function(){

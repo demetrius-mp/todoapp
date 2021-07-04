@@ -29,15 +29,15 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        Compartilhar lista 'Programação para Web'
+
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="">
-                        <div class="mb-3">
-                            <label for="email" class="col-form-label">Email</label>
-                            <input type="email" id="email" name="email" class="form-control">
+                    <form autocomplete="off">
+                        <div class="mb-3 autocomplete">
+                            <label for="email-autocomplete" class="col-form-label">Email</label>
+                            <input type="email" id="email-autocomplete" name="email" class="form-control">
                         </div>
                     </form>
                 </div>
@@ -145,5 +145,6 @@
 {% endblock content %}
 {% block script %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.6.0.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock script %}
