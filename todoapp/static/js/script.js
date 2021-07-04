@@ -15,7 +15,10 @@ let emails;
 
 $.ajax({
     type: 'GET',
-    url: '/api/'
+    url: '/api/emails',
+    complete: function(response) {
+        emails = response['responseJSON']
+    }
 })
 
 $.ajax({
@@ -208,7 +211,7 @@ $(document).bind("mousedown", function (event) {
 function compartilharLista() {
     $modal_compartilhar_lista.find('.modal-title').text("Compartilhar lista '" + $lista_ctx_menu.text() + "'")
     $modal_compartilhar_lista.modal('show')
-    autocomplete(document.getElementById('email-autocomplete'), ['abc', 'def', 'agh'])
+    autocomplete(document.getElementById('email-autocomplete'), emails)
 }
 
 $ctx_menu.click('li', function(){

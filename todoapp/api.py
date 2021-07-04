@@ -1,6 +1,6 @@
 from peewee import JOIN, DoesNotExist
 from playhouse.shortcuts import model_to_dict
-from todoapp.models import Lista, Tarefa
+from todoapp.models import Usuario, Lista, Tarefa
 from flask import request, jsonify
 from todoapp import app
 from flask_login import current_user, login_required
@@ -117,3 +117,11 @@ def api_tarefas(id_lista, id_tarefa):
 
         tarefa.delete_instance()
         return jsonify({'msg': 'Recurso excluído com sucesso'})
+
+
+@app.route('/api/emails')
+@login_required
+def api_emails():
+    usuarios_email = Usuario.select(Usuario.email)
+    emails = [usuario.email for usuario in usuarios_email if usuario.email != current_user.email]
+    return jsonify(emails)
