@@ -268,9 +268,10 @@ $tarefas.on('click', '.excluir-tarefa', function () {
 
 $tarefas.on('click', '.editar-tarefa', function () {
     let id_tarefa = $(this).attr('id')
+    let $tarefa = $('#tarefa_'+id_tarefa)
 
-    let titulo_tarefa = $('#titulo_tarefa').text()
-    let descricao_tarefa = $('#descricao_tarefa').text()
+    let titulo_tarefa = $tarefa.find('#titulo_tarefa').text()
+    let descricao_tarefa = $tarefa.find('#descricao_tarefa').text()
 
     $.ajax({
         type: 'PATCH',
