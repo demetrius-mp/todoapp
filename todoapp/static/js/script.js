@@ -78,7 +78,7 @@ $('#excluir_lista').on('click', function () {
                     $listasbutton.first().click()
                 }
                 else {
-                    $('#tarefas').empty();
+                    $tarefas.children().not(':first').remove()
 
                     let $nome_lista = $lista_ativa.find('#nome_lista')
                     $nome_lista.text('Selecione ou crie uma lista!')
