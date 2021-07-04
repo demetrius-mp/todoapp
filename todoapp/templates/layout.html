@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/ToDoIcon.png') }}">
+    {% if title %}
+        <title>ToDo - {{ title }}</title>
+    {% else %}
+        <title>ToDo</title>
+    {% endif %}
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('sobre') }}">
+            <img style="height: 30px; width: auto" alt="logo" src="{{ url_for('static', filename='img/ToDoLogo.png') }}" class="ps-3 logo">
+        </a>
+        <div class="navbar-nav">
+            {% if current_user.is_authenticated %}
+                <a class="nav-item nav-link" href="{{ url_for('listas') }}">Ver listas</a>
+                <a class="nav-item nav-link text-danger" href="{{ url_for('logout') }}">Sair</a>
+            {% else %}
+                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('cadastro') }}">Cadastro</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    {% block content %}{% endblock %}
+</div>
+
+<script type="text/javascript" src="{{ url_for('static', filename='toast/tata.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/layout.js') }}"></script>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <script>
+                flash('{{ category }}', '{{ message }}', {
+                    position: 'br',
+                    duration: 2000
+                })
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% block script %}{% endblock %}
+</body>
+</html>

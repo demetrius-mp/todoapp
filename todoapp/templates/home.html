@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container-fluid row mt-4 border-bottom">
+        <div class="col-6 border-end">
+            <h2>Sobre o projeto</h2>
+            <p class="text-justify-CUSTOM">
+                Esta aplicação é o resultado de um trabalho para a disciplina de Programação para a Web, ministrada por Hudson Borges, na FACOM, UFMS.
+                <br>
+                Ela foi pensada e desenvolvida como uma ferramenta simples e eficiente para o seu propósito. Acreditamos ter alcançado esse objetivo, e
+                sem abrir mão da segurança e beleza de uma aplicação web moderna.
+                <br>
+            </p>
+            <h4>Algumas características da nossa aplicação</h4>
+            <p class="text-justify-CUSTOM">
+                Foi utilizado o padrão MVC, uma vez que o flask foi pensado para funcionar dessa forma.
+                <br>
+                Os fomulários possuem validadores de dados, tais como de email, campos obrigatórios, tamanho mínimo e máximo.
+                <br>
+                Os fomulários de cadastro e login possuem verificação de usuário já existente, senha incorreta, avisando ao usuário especificamente o que aconteceu durante
+                uma falha de cadastro ou login.
+                <br>
+                Usuários não conseguem acessar, modificar, nem excluir listas e tarefas de outros usuários.
+                <br>
+                <a class="text-decoration-none" href="{{ url_for('cadastro') }}">Cadastre-se</a> agora mesmo e teste nossa aplicação!
+            </p>
+        </div>
+        <div class="col-6">
+            <h2 class="mb-3">Sobre as ferramentas</h2>
+            <h4>Front-end</h4>
+            <p class="text-justify-CUSTOM">
+                Foi utilizado, majoritariamente, o framework <a class="text-decoration-none" href="https://getbootstrap.com/">Bootstrap 5.0.1</a>.
+                <br>
+                Também implementamos estilos próprios de acordo com a necessidade, mas também evitando a repetição de classes já trazidas pelo framework utilizado.
+            </p>
+            <h4>Back-end</h4>
+            <p class="text-justify-CUSTOM">
+                Foi utilizado o micro-framework <a class="text-decoration-none" href="https://flask.palletsprojects.com/en/2.0.x/">flask</a>, na linguagem Python versão 3.9.
+                A vantagem da utilização deste micro-framework, é que a aplicação fica mais leve, devido ao fato de que
+                não há uma carga desnecessária de módulos que não são utilizados.
+                <br>
+                Os módulos utilizados foram:
+                <br>
+                <a class="text-decoration-none" href="https://flask-wtf.readthedocs.io/en/0.15.x/">Flask-WTF</a>, para manuseio de formulários.
+                <br>
+                <a class="text-decoration-none" href="https://flask-login.readthedocs.io/en/latest/">Flask-Login</a>, para gerenciamento de login.
+                <br>
+                <a class="text-decoration-none" href="https://flask-bcrypt.readthedocs.io/en/latest/">Flask-Bcrypt</a>, para encriptar senhas.
+                <br>
+                <a class="text-decoration-none" href="https://docs.peewee-orm.com/en/latest/">Peewee</a>, para mapeamento objeto-relacional.
+                <br>
+                Vale destacar que a template engine utilizada pelo flask é o <a class="text-decoration-none" href="https://jinja.palletsprojects.com/en/3.0.x/">Jinja2</a>, 
+                e a <a class="text-decoration-none" href="https://wsgi.readthedocs.io/en/latest/what.html">WSGI</a> é implementada pela biblioteca
+                <a class="text-decoration-none" href="https://palletsprojects.com/p/werkzeug/">Werkzeug</a>.
+                <br>
+                O banco de dados utilizado foi o <a class="text-decoration-none" href="https://www.sqlite.org/index.html">SQLite3</a>, devido a ausência da necessidade de um servidor.
+                Também, como a aplicação não exige um banco robusto, esta foi a melhor opção.
+            </p>
+        </div>
+    </div>
+    <div>
+        <div class="container-fluid mt-3">
+            <h3>Sugestões ou dúvidas?</h3>
+            <p>
+                Entre em contato conosco através de um dos emails abaixo:
+            </p>
+            <ul>
+                <li>
+                    <a class="text-decoration-none" href="mailto:demetrius.panovitch@ufms.br">demetrius.panovitch@ufms.br</a>
+                </li>
+                <li>
+                    <a class="text-decoration-none" href="mailto:maria_luisa@ufms.br">maria_luisa@ufms.br</a>
+                </li>
+                <li>
+                    <a class="text-decoration-none" href="mailto:denison@ufms.br">denison@ufms.br</a>
+                </li>
+                <li>
+                    <a class="text-decoration-none" href="mailto:caio@ufms.br">caio@ufms.br</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+{% endblock content %}
