@@ -316,6 +316,10 @@ function filterList() {
             tarefa = tarefas[i];
             titulo = tarefa.getElementsByClassName("text-left")[0].textContent;
 
+            if (titulo.includes('\\\\modelo')) {
+                continue
+            }
+
             let filters = filter.split(" ");
             filters = filters.filter(f => f.length)
 
