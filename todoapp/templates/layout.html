@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/bootstrap-icons.css') }}" rel="stylesheet" type="text/css">
     <link rel="icon" href="{{ url_for('static', filename='img/ToDoIcon.png') }}">
     {% if title %}
         <title>ToDo - {{ title }}</title>
@@ -36,7 +36,7 @@
 </div>
 
 <script type="text/javascript" src="{{ url_for('static', filename='toast/tata.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/layout.js') }}"></script>
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
