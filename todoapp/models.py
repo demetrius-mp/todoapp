@@ -39,4 +39,7 @@ class Tarefa(BaseModel):
 
 class Notificacao(BaseModel):
     id = AutoField()
+    tipo = CharField(choices=['Compartilhar lista'])
+    id_recurso = IntegerField()
     texto = CharField()
+    usuario = ForeignKeyField(Usuario, backref='notificacoes')

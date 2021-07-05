@@ -12,12 +12,21 @@ let qtd_concluidas;
 let qtd_tarefas;
 let id_lista_ativa;
 let emails;
+let notificacoes;
 
 $.ajax({
     type: 'GET',
     url: '/api/emails',
     complete: function(response) {
         emails = response['responseJSON']
+    }
+})
+
+$.ajax({
+    type: 'GET',
+    url: '/api/notificacoes',
+    complete: function(response) {
+        notificacoes = response['responseJSON']
     }
 })
 
@@ -213,6 +222,26 @@ $(document).bind("mousedown", function (event) {
     }
 });
 
+function enviarNotificacaoCopiaLista(email) {
+    $.ajax({
+        type: 'POST',
+        url: 'api/notificacoes?tipo=copia_lista',
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(
+            {
+                'para': email
+            }
+        ),
+        success: function () {
+            tata.success('Sucesso', 'Solicitação de recebimento de cópia enviada com sucesso', {
+                position: 'br',
+                duration: 2000
+            })
+        }
+    })
+}
+
 function enviarCopiaLista() {
     $modal_compartilhar_lista.find('.modal-title').text("Enviar cópia de '" + $lista_ctx_menu.text() + "'")
     $modal_compartilhar_lista.modal('show')
@@ -237,9 +266,11 @@ function enviarCopiaLista() {
 
         else {
             $modal_compartilhar_lista.modal('hide')
+            enviarNotificacaoCopiaLista($email.val())
+            /*
             $.ajax({
                 type: 'POST',
-                url: `/api/listas/enviar_copia`,
+                url: '/api/listas/enviar_copia',
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify(
@@ -255,6 +286,7 @@ function enviarCopiaLista() {
                     })
                 }
             })
+             */
         }
     })
 }

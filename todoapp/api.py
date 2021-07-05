@@ -1,6 +1,6 @@
 from peewee import JOIN, DoesNotExist, chunked
 from playhouse.shortcuts import model_to_dict
-from todoapp.models import Usuario, Lista, Tarefa
+from todoapp.models import Usuario, Lista, Tarefa, Notificacao
 from flask import request, jsonify
 from todoapp import app, db
 from flask_login import current_user, login_required
@@ -130,33 +130,51 @@ def api_emails():
 @app.route('/api/listas/enviar_copia', methods=['POST'])
 @login_required
 def api_enviar_copia():
-    data = request.json
+    if request.method == 'POST':
+        data = request.json
 
-    id_lista = int(data['id_lista'])
-    lista = Lista.get_or_none(Lista.id == id_lista)
-    if not lista:
-        return jsonify({'msg': 'Lista não encontrada'})
+        id_lista = int(data['id_lista'])
+        lista = Lista.get_or_none(Lista.id == id_lista)
+        if not lista:
+            return jsonify({'msg': 'Lista não encontrada'})
 
-    email_recebedor = data['email_recebedor']
-    recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
-    if not recebedor:
-        return jsonify({'msg': 'Usuário não encontrada'})
+        email_recebedor = data['email_recebedor']
+        recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
+        if not recebedor:
+            return jsonify({'msg': 'Usuário não encontrado'})
 
-    copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao, usuario=recebedor)
+        copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao, usuario=recebedor)
 
-    tarefas = [{
-        'titulo': tarefa.titulo,
-        'descricao': tarefa.descricao,
-        'lista': copia_lista
-    } for tarefa in lista.tarefas]
+        tarefas = [{
+            'titulo': tarefa.titulo,
+            'descricao': tarefa.descricao,
+            'lista': copia_lista
+        } for tarefa in lista.tarefas]
 
-    with db.atomic():
-        for batch in chunked(tarefas, 100):
-            Tarefa.insert_many(batch).execute()
+        with db.atomic():
+            for batch in chunked(tarefas, 100):
+                Tarefa.insert_many(batch).execute()
 
-    return jsonify({'msg': 'success'})
+        return jsonify({'msg': 'success'})
 
 
-@app.route('/api/notificacoes', methods=['POST'])
+@app.route('/api/notificacoes', methods=['GET', 'POST'])
+@login_required
 def api_notificacoes():
-    pass
+    if request.method == 'GET':
+        for n in current_user.notificacoes:
+            print(n.texto)
+        return jsonify({'msg': 'success'})
+
+    if request.method == 'POST':
+        tipo = request.args.get('tipo')
+        data = request.json
+
+        email_recebedor = data['para']
+        recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
+        if not recebedor:
+            return jsonify({'msg': 'Usuário não encontrado'})
+
+        texto = f'{current_user.nome} deseja enviar uma lista para você!'
+        Notificacao.create(texto=texto, usuario=recebedor)
+        return jsonify({'msg': 'success'})
