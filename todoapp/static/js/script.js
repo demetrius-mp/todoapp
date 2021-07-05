@@ -248,6 +248,12 @@ function enviarCopiaLista() {
                         'email_recebedor': $email.val()
                     }
                 ),
+                complete: function () {
+                    tata.success('Sucesso', 'Lista compartilhada com sucesso', {
+                        position: 'br',
+                        duration: 2000
+                    })
+                }
             })
         }
     })

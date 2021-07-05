@@ -1,8 +1,8 @@
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, chunked
 from playhouse.shortcuts import model_to_dict
 from todoapp.models import Usuario, Lista, Tarefa
 from flask import request, jsonify
-from todoapp import app
+from todoapp import app, db
 from flask_login import current_user, login_required
 
 
@@ -133,13 +133,25 @@ def api_enviar_copia():
     data = request.json
 
     id_lista = int(data['id_lista'])
-    copia_lista = Lista.get_or_none(Lista.id == id_lista)
-    if not copia_lista:
+    lista = Lista.get_or_none(Lista.id == id_lista)
+    if not lista:
         return jsonify({'msg': 'Lista não encontrada'})
 
     email_recebedor = data['email_recebedor']
     recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
     if not recebedor:
         return jsonify({'msg': 'Usuário não encontrada'})
+
+    copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao, usuario=recebedor)
+
+    tarefas = [{
+        'titulo': tarefa.titulo,
+        'descricao': tarefa.descricao,
+        'lista': copia_lista
+    } for tarefa in lista.tarefas]
+
+    with db.atomic():
+        for batch in chunked(tarefas, 100):
+            Tarefa.insert_many(batch).execute()
 
     return jsonify({'msg': 'success'})

@@ -11,10 +11,11 @@ login_manager.login_message_category = 'info'
 login_manager.login_message = 'Faça login antes de acessar esta página.'
 
 
-def create_tables():
-    from todoapp.models import db, Usuario, Lista, Tarefa
-    db.create_tables([Usuario, Lista, Tarefa])
-
-
 from todoapp import routes
+from todoapp.models import db
 from todoapp import api
+
+
+def create_tables():
+    from todoapp.models import Usuario, Lista, Tarefa
+    db.create_tables([Usuario, Lista, Tarefa])
