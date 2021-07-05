@@ -17,5 +17,5 @@ from todoapp import api
 
 
 def create_tables():
-    from todoapp.models import Usuario, Lista, Tarefa
-    db.create_tables([Usuario, Lista, Tarefa])
+    from todoapp.models import Usuario, Lista, Tarefa, Notificacao
+    db.create_tables([Usuario, Lista, Tarefa, Notificacao])

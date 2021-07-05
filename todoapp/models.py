@@ -35,3 +35,8 @@ class Tarefa(BaseModel):
     descricao = TextField()
     concluida = BooleanField(default=False)
     lista = ForeignKeyField(Lista, backref='tarefas')
+
+
+class Notificacao(BaseModel):
+    id = AutoField()
+    texto = CharField()

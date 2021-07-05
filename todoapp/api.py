@@ -155,3 +155,8 @@ def api_enviar_copia():
             Tarefa.insert_many(batch).execute()
 
     return jsonify({'msg': 'success'})
+
+
+@app.route('/api/notificacoes', methods=['POST'])
+def api_notificacoes():
+    pass
