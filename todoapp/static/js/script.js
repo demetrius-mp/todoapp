@@ -7,6 +7,7 @@ let $lista_ativa = $('#lista')
 let $lista_ctx_menu;
 let $progresso_lista_ativa = $lista_ativa.find('#progresso')
 let $ctx_menu = $('.context-menu')
+let $notificacoes = $('#notificacoes')
 
 let qtd_concluidas;
 let qtd_tarefas;
@@ -27,6 +28,19 @@ $.ajax({
     url: '/api/notificacoes',
     complete: function(response) {
         notificacoes = response['responseJSON']
+        let $ul = $notificacoes.find('ul')
+        if (notificacoes.length > 0) {
+            $notificacoes.find('#badge').css('display', '')
+        }
+        else {
+            $ul.find('li').text('Nenhuma notificação por enquanto!')
+            $ul.find('li').addClass('dropdown-item')
+        }
+        for (let i = 0; i < notificacoes.length; i++) {
+            let $a = $ul.find('a')
+            $a.text(notificacoes[i]['texto'])
+            $a.attr('id', `${i}`)
+        }
     }
 })
 
@@ -57,6 +71,18 @@ $.ajax({
             }
         }
     }
+})
+
+$notificacoes.on('click', 'a', function () {
+    let id_notificacao = $(this).attr('id')
+    let pessoa = notificacoes[id_notificacao]['enviado_por']
+    let nomeLista = notificacoes[id_notificacao]['lista']
+
+    $modal.find('.modal-title').text('Lista compartilhada')
+    $modal.find('.modal-body').text(`Deseja aceitar '${nomeLista}' enviada por ${pessoa}?`)
+    $modal.modal('show')
+    let $modalfooter = $modal.find('.modal-footer')
+    $modalfooter.off()
 })
 
 $('#criar_lista').on('click', function(){
@@ -222,26 +248,6 @@ $(document).bind("mousedown", function (event) {
     }
 });
 
-function enviarNotificacaoCopiaLista(email) {
-    $.ajax({
-        type: 'POST',
-        url: 'api/notificacoes?tipo=copia_lista',
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(
-            {
-                'para': email
-            }
-        ),
-        success: function () {
-            tata.success('Sucesso', 'Solicitação de recebimento de cópia enviada com sucesso', {
-                position: 'br',
-                duration: 2000
-            })
-        }
-    })
-}
-
 function enviarCopiaLista() {
     $modal_compartilhar_lista.find('.modal-title').text("Enviar cópia de '" + $lista_ctx_menu.text() + "'")
     $modal_compartilhar_lista.modal('show')
@@ -266,8 +272,6 @@ function enviarCopiaLista() {
 
         else {
             $modal_compartilhar_lista.modal('hide')
-            enviarNotificacaoCopiaLista($email.val())
-            /*
             $.ajax({
                 type: 'POST',
                 url: '/api/listas/enviar_copia',
@@ -286,7 +290,6 @@ function enviarCopiaLista() {
                     })
                 }
             })
-             */
         }
     })
 }

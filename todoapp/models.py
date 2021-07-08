@@ -37,9 +37,9 @@ class Tarefa(BaseModel):
     lista = ForeignKeyField(Lista, backref='tarefas')
 
 
-class Notificacao(BaseModel):
+class NotificacaoCopiaLista(BaseModel):
     id = AutoField()
-    tipo = CharField(choices=['Compartilhar lista'])
-    id_recurso = IntegerField()
     texto = CharField()
-    usuario = ForeignKeyField(Usuario, backref='notificacoes')
+    lista = ForeignKeyField(Lista, backref='notificacoes_copia')
+    enviado_por = ForeignKeyField(Usuario, backref='ntf_copias_enviadas')
+    recebido_por = ForeignKeyField(Usuario, backref='ntf_copias_recebidas')

@@ -1,6 +1,6 @@
 from peewee import JOIN, DoesNotExist, chunked
 from playhouse.shortcuts import model_to_dict
-from todoapp.models import Usuario, Lista, Tarefa, Notificacao
+from todoapp.models import Usuario, Lista, Tarefa, NotificacaoCopiaLista
 from flask import request, jsonify
 from todoapp import app, db
 from flask_login import current_user, login_required
@@ -139,12 +139,17 @@ def api_enviar_copia():
             return jsonify({'msg': 'Lista não encontrada'})
 
         email_recebedor = data['email_recebedor']
-        recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
-        if not recebedor:
+        recebido_por = Usuario.get_or_none(Usuario.email == email_recebedor)
+        if not recebido_por:
             return jsonify({'msg': 'Usuário não encontrado'})
 
-        copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao, usuario=recebedor)
+        texto = f'Cópia de lista de {current_user.nome}'
+        notificacao = NotificacaoCopiaLista.create(texto=texto, lista=lista, enviado_por=current_user.id,
+                                                   recebido_por=recebido_por)
 
+        '''
+        copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao)
+        
         tarefas = [{
             'titulo': tarefa.titulo,
             'descricao': tarefa.descricao,
@@ -156,25 +161,27 @@ def api_enviar_copia():
                 Tarefa.insert_many(batch).execute()
 
         return jsonify({'msg': 'success'})
+        '''
+        return jsonify({'msg': 'success'})
 
 
-@app.route('/api/notificacoes', methods=['GET', 'POST'])
+@app.route('/api/notificacoes', methods=['GET'])
 @login_required
 def api_notificacoes():
     if request.method == 'GET':
-        for n in current_user.notificacoes:
-            print(n.texto)
-        return jsonify({'msg': 'success'})
+        notificacoes = (NotificacaoCopiaLista
+                        .select(NotificacaoCopiaLista.id,
+                                NotificacaoCopiaLista.texto,
+                                Lista.nome,
+                                Usuario.nome
+                                )
+                        .join(Lista).join(Usuario)
+                        .where(NotificacaoCopiaLista.recebido_por == current_user.id))
 
-    if request.method == 'POST':
-        tipo = request.args.get('tipo')
-        data = request.json
-
-        email_recebedor = data['para']
-        recebedor = Usuario.get_or_none(Usuario.email == email_recebedor)
-        if not recebedor:
-            return jsonify({'msg': 'Usuário não encontrado'})
-
-        texto = f'{current_user.nome} deseja enviar uma lista para você!'
-        Notificacao.create(texto=texto, usuario=recebedor)
-        return jsonify({'msg': 'success'})
+        notificacoes = [{
+            'id': n.id,
+            'texto': n.texto,
+            'lista': n.lista.nome,
+            'enviado_por': n.lista.usuario.nome
+        } for n in notificacoes]
+        return jsonify(notificacoes)
