@@ -82,7 +82,38 @@ $notificacoes.on('click', 'a', function () {
     $modal.find('.modal-body').text(`Deseja aceitar '${nomeLista}' enviada por ${pessoa}?`)
     $modal.modal('show')
     let $modalfooter = $modal.find('.modal-footer')
+    let $cancelar = $modalfooter.find('#cancelar')
+    let $confirmar = $modalfooter.find('#confirmar')
+    $cancelar.text('Recusar').removeClass('btn-secondary').addClass('btn-danger')
+    $confirmar.text('Aceitar').removeClass('btn-danger').addClass('btn-primary')
+
     $modalfooter.off()
+
+    $modalfooter.on('click', '#confirmar', function () {
+        $.ajax({
+            type: 'PATCH',
+            url: '/api/listas/copias?action=aceitar',
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(
+                {
+                    'id_ntf': notificacoes[id_notificacao]['id']
+                }
+            ),
+            complete: function (msg) {
+                desenharLista(msg['responseJSON']).click()
+
+                tata.success('Sucesso', 'Lista copiada com sucesso', {
+                    position: 'br',
+                    duration: 2000
+                })
+            }
+        })
+    })
+
+    $cancelar.on('click', function () {
+        console.log(321)
+    })
 })
 
 $('#criar_lista').on('click', function(){
@@ -274,7 +305,7 @@ function enviarCopiaLista() {
             $modal_compartilhar_lista.modal('hide')
             $.ajax({
                 type: 'POST',
-                url: '/api/listas/enviar_copia',
+                url: '/api/listas/copias',
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify(
@@ -418,6 +449,23 @@ $tarefas.on('click', '.editar-tarefa', function () {
         }
     })
 })
+
+function limparNotificacoes() {
+
+    $notificacoes.find('ul').empty().append('<li class="dropdown-item">Nada por aqui!</li>')
+    $notificacoes.find('.badge').css('display', 'none')
+}
+
+function desenharLista(lista) {
+    let nova_lista = document.createElement('button')
+    nova_lista.className= 'list-group-item list-group-item-action'
+    nova_lista.innerText = lista["nome"]
+    nova_lista.style.border = 'none'
+    nova_lista.id = 'lista_' + lista['id']
+    $listas.append(nova_lista)
+
+    return nova_lista
+}
 
 function desenharTarefa(tarefa) {
     let $tarefa_model = $('#model_tarefa').clone().css('display', '')

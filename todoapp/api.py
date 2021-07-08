@@ -127,7 +127,7 @@ def api_emails():
     return jsonify(emails)
 
 
-@app.route('/api/listas/enviar_copia', methods=['POST'])
+@app.route('/api/listas/copias', methods=['POST', 'PATCH'])
 @login_required
 def api_enviar_copia():
     if request.method == 'POST':
@@ -163,6 +163,33 @@ def api_enviar_copia():
         return jsonify({'msg': 'success'})
         '''
         return jsonify({'msg': 'success'})
+
+    if request.method == 'PATCH':
+        action = request.args.get('action')
+        data = request.json
+
+        ntf = NotificacaoCopiaLista.get_or_none(NotificacaoCopiaLista.id == data['id_ntf'])
+        if not ntf:
+            return jsonify({'msg': 'fail'})
+
+        if action == 'aceitar':
+            lista = Lista.get_or_none(Lista.id == ntf.lista)
+
+            copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao, usuario=current_user.id)
+
+            tarefas = [{
+                'titulo': tarefa.titulo,
+                'descricao': tarefa.descricao,
+                'lista': copia_lista
+            } for tarefa in lista.tarefas]
+
+            with db.atomic():
+                for batch in chunked(tarefas, 100):
+                    Tarefa.insert_many(batch).execute()
+
+            return jsonify(model_to_dict(copia_lista, recurse=False))
+
+        return jsonify({'msg': 'fail'})
 
 
 @app.route('/api/notificacoes', methods=['GET'])
