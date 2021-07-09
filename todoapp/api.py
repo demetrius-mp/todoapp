@@ -1,6 +1,6 @@
 from peewee import JOIN, DoesNotExist, chunked
 from playhouse.shortcuts import model_to_dict
-from todoapp.models import Usuario, Lista, Tarefa, NotificacaoCopiaLista
+from todoapp.models import Usuario, Lista, Tarefa, Notificacao
 from flask import request, jsonify
 from todoapp import app, db
 from flask_login import current_user, login_required
@@ -144,31 +144,16 @@ def api_enviar_copia():
             return jsonify({'msg': 'Usuário não encontrado'})
 
         texto = f'Cópia de lista de {current_user.nome}'
-        notificacao = NotificacaoCopiaLista.create(texto=texto, lista=lista, enviado_por=current_user.id,
-                                                   recebido_por=recebido_por)
+        notificacao = Notificacao.create(texto=texto, lista=lista, enviado_por=current_user.id,
+                                         recebido_por=recebido_por)
 
-        '''
-        copia_lista = Lista.create(nome=lista.nome, descricao=lista.descricao)
-        
-        tarefas = [{
-            'titulo': tarefa.titulo,
-            'descricao': tarefa.descricao,
-            'lista': copia_lista
-        } for tarefa in lista.tarefas]
-
-        with db.atomic():
-            for batch in chunked(tarefas, 100):
-                Tarefa.insert_many(batch).execute()
-
-        return jsonify({'msg': 'success'})
-        '''
         return jsonify({'msg': 'success'})
 
     if request.method == 'PATCH':
         action = request.args.get('action')
         data = request.json
 
-        ntf = NotificacaoCopiaLista.get_or_none(NotificacaoCopiaLista.id == data['id_ntf'])
+        ntf: Notificacao = Notificacao.get_or_none(Notificacao.id == data['id_ntf'])
         if not ntf:
             return jsonify({'msg': 'fail'})
 
@@ -187,6 +172,8 @@ def api_enviar_copia():
                 for batch in chunked(tarefas, 100):
                     Tarefa.insert_many(batch).execute()
 
+            ntf.delete_instance()
+
             return jsonify(model_to_dict(copia_lista, recurse=False))
 
         return jsonify({'msg': 'fail'})
@@ -196,14 +183,14 @@ def api_enviar_copia():
 @login_required
 def api_notificacoes():
     if request.method == 'GET':
-        notificacoes = (NotificacaoCopiaLista
-                        .select(NotificacaoCopiaLista.id,
-                                NotificacaoCopiaLista.texto,
+        notificacoes = (Notificacao
+                        .select(Notificacao.id,
+                                Notificacao.texto,
                                 Lista.nome,
                                 Usuario.nome
                                 )
                         .join(Lista).join(Usuario)
-                        .where(NotificacaoCopiaLista.recebido_por == current_user.id))
+                        .where(Notificacao.recebido_por == current_user.id))
 
         notificacoes = [{
             'id': n.id,

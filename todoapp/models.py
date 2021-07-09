@@ -37,7 +37,7 @@ class Tarefa(BaseModel):
     lista = ForeignKeyField(Lista, backref='tarefas')
 
 
-class NotificacaoCopiaLista(BaseModel):
+class Notificacao(BaseModel):
     id = AutoField()
     texto = CharField()
     lista = ForeignKeyField(Lista, backref='notificacoes_copia')

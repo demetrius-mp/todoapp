@@ -14,6 +14,7 @@ let qtd_tarefas;
 let id_lista_ativa;
 let emails;
 let notificacoes;
+let qtd_notificacoes;
 
 $.ajax({
     type: 'GET',
@@ -28,18 +29,16 @@ $.ajax({
     url: '/api/notificacoes',
     complete: function(response) {
         notificacoes = response['responseJSON']
+        qtd_notificacoes = notificacoes.length
         let $ul = $notificacoes.find('ul')
         if (notificacoes.length > 0) {
             $notificacoes.find('#badge').css('display', '')
         }
         else {
-            $ul.find('li').text('Nenhuma notificação por enquanto!')
-            $ul.find('li').addClass('dropdown-item')
+            $ul.append(`<li class="dropdown-item">Nenhuma notificação por enquanto!</li>`)
         }
         for (let i = 0; i < notificacoes.length; i++) {
-            let $a = $ul.find('a')
-            $a.text(notificacoes[i]['texto'])
-            $a.attr('id', `${i}`)
+            $ul.append(`<li><a style="cursor: pointer" id="${i}" class="dropdown-item">${notificacoes[i]['texto']}</a></li>`)
         }
     }
 })
@@ -90,6 +89,7 @@ $notificacoes.on('click', 'a', function () {
     $modalfooter.off()
 
     $modalfooter.on('click', '#confirmar', function () {
+        let id_ntf = notificacoes[id_notificacao]['id']
         $.ajax({
             type: 'PATCH',
             url: '/api/listas/copias?action=aceitar',
@@ -97,11 +97,13 @@ $notificacoes.on('click', 'a', function () {
             contentType: "application/json",
             data: JSON.stringify(
                 {
-                    'id_ntf': notificacoes[id_notificacao]['id']
+                    'id_ntf': id_ntf
                 }
             ),
             complete: function (msg) {
                 desenharLista(msg['responseJSON']).click()
+                qtd_notificacoes--
+                limparNotificacoes(id_notificacao)
 
                 tata.success('Sucesso', 'Lista copiada com sucesso', {
                     position: 'br',
@@ -450,10 +452,16 @@ $tarefas.on('click', '.editar-tarefa', function () {
     })
 })
 
-function limparNotificacoes() {
-
-    $notificacoes.find('ul').empty().append('<li class="dropdown-item">Nada por aqui!</li>')
-    $notificacoes.find('.badge').css('display', 'none')
+function limparNotificacoes(idx_ntf) {
+    if (qtd_notificacoes === 0) {
+        $notificacoes.find('ul').empty().append('<li class="dropdown-item">Nada por aqui!</li>')
+        $notificacoes.find('#badge').css('display', 'none')
+    }
+    else {
+        console.log(idx_ntf)
+        console.log($notificacoes.find(`li, #${idx_ntf}`).html())
+        $notificacoes.find(`li #${idx_ntf}`).remove()
+    }
 }
 
 function desenharLista(lista) {
